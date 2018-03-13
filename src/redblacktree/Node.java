@@ -94,7 +94,11 @@ public final class Node<K extends Comparable<? super K>, V> {
   }
 
   private void reparent(Node<K, V> replacement) {
-
+    if (this.isLeftChild()) {
+      parent.setLeft(replacement);
+    } else {
+      parent.setRight(replacement);
+    }
   }
 
   /* Colour operations */
