@@ -45,23 +45,66 @@ public class RedBlackTree<K extends Comparable<? super K>, V> {
   }
 
   private void insertCaseOne(Node<K, V> current) {
-    throw new RuntimeException("TODO: implement insertion case 1");
+    if (current.equals(root)) {
+      current.setBlack();
+    } else {
+      insertCaseTwo(current);
+    }
   }
 
   private void insertCaseTwo(Node<K, V> current) {
-    throw new RuntimeException("TODO: implement insertion case 2");
+    if (!current.getParent().isBlack()) {
+      insertCaseThree(current);
+    }
   }
 
   private void insertCaseThree(Node<K, V> current) {
-    throw new RuntimeException("TODO: implement insertion case 3");
+    Node<K, V> uncle = current.getUncle();
+    if (uncle != null && uncle.isRed()) {
+      current.getParent().setBlack();
+      current.getUncle().setBlack();
+      current.getGrandparent().setRed();
+
+      insertCaseOne(current.getGrandparent());
+    } else {
+      insertCaseFour(current);
+    }
   }
 
   private void insertCaseFour(Node<K, V> current) {
-    throw new RuntimeException("TODO: implement insertion case 4");
+    if (caseFourA(current)) {
+      current.getParent().rotateLeft();
+      insertCaseFive(current.getParent());
+
+    } else if (caseFourB(current)) {
+      current.getParent().rotateRight();
+      insertCaseFive(current.getParent());
+
+    } else {
+      insertCaseFive(current);
+    }
+  }
+
+  private boolean caseFourA(Node<K, V> current) {
+    return current.getParent().isLeftChild() && current.isRightChild();
+  }
+
+  private boolean caseFourB(Node<K, V> current) {
+    return current.getParent().isRightChild() && current.isLeftChild();
   }
 
   private void insertCaseFive(Node<K, V> current) {
-    throw new RuntimeException("TODO: implement insertion case 5");
+    //TODO:fix null pointer here.
+    Node<K, V> grandparent = current.getGrandparent();
+
+    current.getParent().setBlack();
+    grandparent.setRed();
+
+    if (current.isLeftChild()) {
+      current.getGrandparent().rotateRight();
+    } else {
+      current.getGrandparent().rotateLeft();
+    }
   }
 
   private Tuple<Node<K, V>, Node<K, V>> findNode(K key) {
