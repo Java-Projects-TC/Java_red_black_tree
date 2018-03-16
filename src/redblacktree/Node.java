@@ -11,7 +11,7 @@ public final class Node<K extends Comparable<? super K>, V> {
   private K key;
   private V value;
 
-  public Node(K key, V value, Colour colour) {
+  Node(K key, V value, Colour colour) {
     if (key == null) {
       throw new IllegalArgumentException("key cannot be null!");
     }
@@ -23,7 +23,7 @@ public final class Node<K extends Comparable<? super K>, V> {
 
   /* Tree operations */
 
-  public Node<K, V> getParent() {
+  Node<K, V> getParent() {
     return this.parent;
   }
 
@@ -31,7 +31,7 @@ public final class Node<K extends Comparable<? super K>, V> {
     this.parent = node;
   }
 
-  public void setRight(Node<K, V> node) {
+  void setRight(Node<K, V> node) {
     if (right != null && right.getParent() == this) {
       right.setParent(null);
     }
@@ -41,7 +41,7 @@ public final class Node<K extends Comparable<? super K>, V> {
     }
   }
 
-  public void setLeft(Node<K, V> node) {
+  void setLeft(Node<K, V> node) {
     if (left != null && left.getParent() == this) {
       left.setParent(null);
     }
@@ -51,44 +51,44 @@ public final class Node<K extends Comparable<? super K>, V> {
     }
   }
 
-  public boolean isLeftChild() {
+  boolean isLeftChild() {
     return parent != null && parent.getLeft() == this;
   }
 
-  public boolean isRightChild() {
+  boolean isRightChild() {
     return parent != null && parent.getRight() == this;
   }
 
-  public Node<K, V> getLeft() {
+  Node<K, V> getLeft() {
     return this.left;
   }
 
-  public Node<K, V> getRight() {
+  Node<K, V> getRight() {
     return this.right;
   }
 
-  public Node<K, V> getGrandparent() {
+  Node<K, V> getGrandparent() {
     return this.parent != null ? this.parent.parent : null;
   }
 
-  public Node<K, V> getUncle() {
+  Node<K, V> getUncle() {
     Node<K, V> grandparent = getGrandparent();
     return grandparent != null ? (grandparent.left == this.parent ?
         grandparent.right : grandparent.left) : null;
   }
 
-  public Node<K, V> rotateRight() {
+  Node<K, V> rotateRight() {
     Node<K, V> leftChild = this.getLeft();
-    this.setLeft(leftChild.getLeft());
-    leftChild.reparent(this.parent);
+    this.setLeft(leftChild.getRight());
+    reparent(leftChild);
     leftChild.setRight(this);
     return leftChild;
   }
 
-  public Node<K, V> rotateLeft() {
+  Node<K, V> rotateLeft() {
     Node<K, V> rightChild = this.getRight();
-    this.setRight(rightChild.getRight());
-    rightChild.reparent(this.parent);
+    this.setRight(rightChild.getLeft());
+    reparent(rightChild);
     rightChild.setLeft(this);
     return rightChild;
   }
@@ -97,7 +97,8 @@ public final class Node<K extends Comparable<? super K>, V> {
     if (parent != null) {
       if (this.isLeftChild()) {
         parent.setLeft(replacement);
-      } else {
+      }
+      if (this.isRightChild()) {
         parent.setRight(replacement);
       }
     }
@@ -105,33 +106,33 @@ public final class Node<K extends Comparable<? super K>, V> {
 
   /* Colour operations */
 
-  public boolean isBlack() {
+  boolean isBlack() {
     return colour == Colour.BLACK;
   }
 
-  public boolean isRed() {
+  boolean isRed() {
     return colour == Colour.RED;
   }
 
-  public void setRed() {
+  void setRed() {
     colour = Colour.RED;
   }
 
-  public void setBlack() {
+  void setBlack() {
     colour = Colour.BLACK;
   }
 
   /* Key value operations */
 
-  public K getKey() {
+  K getKey() {
     return key;
   }
 
-  public V getValue() {
+  V getValue() {
     return value;
   }
 
-  public void setValue(V value) {
+  void setValue(V value) {
     this.value = value;
   }
 

@@ -14,7 +14,7 @@ public class RedBlackTree<K extends Comparable<? super K>, V> {
     this.root = root;
   }
 
-  public void put(K key, V value) {
+  public synchronized void put(K key, V value) {
 
     Tuple<Node<K, V>, Node<K, V>> pair = findNode(key);
 
@@ -27,12 +27,12 @@ public class RedBlackTree<K extends Comparable<? super K>, V> {
     }
 
     if (parent == null) { // empty tree
-      root = new Node<K, V>(key, value, Colour.BLACK);
+      root = new Node<>(key, value, Colour.BLACK);
       return;
     }
     /* create a new key */
     int comparison = key.compareTo(parent.getKey());
-    Node<K, V> newNode = new Node<K, V>(key, value, Colour.RED);
+    Node<K, V> newNode = new Node<>(key, value, Colour.RED);
     if (comparison < 0) {
       parent.setLeft(newNode);
     } else {
@@ -74,11 +74,11 @@ public class RedBlackTree<K extends Comparable<? super K>, V> {
   private void insertCaseFour(Node<K, V> current) {
     if (caseFourA(current)) {
       current.getParent().rotateLeft();
-      insertCaseFive(current.getParent());
+      insertCaseFive(current.getLeft());
 
     } else if (caseFourB(current)) {
       current.getParent().rotateRight();
-      insertCaseFive(current.getParent());
+      insertCaseFive(current.getRight());
 
     } else {
       insertCaseFive(current);
@@ -94,16 +94,19 @@ public class RedBlackTree<K extends Comparable<? super K>, V> {
   }
 
   private void insertCaseFive(Node<K, V> current) {
-    //TODO:fix null pointer here.
     Node<K, V> grandparent = current.getGrandparent();
 
     current.getParent().setBlack();
     grandparent.setRed();
 
     if (current.isLeftChild()) {
-      current.getGrandparent().rotateRight();
-    } else {
-      current.getGrandparent().rotateLeft();
+      grandparent.rotateRight();
+    }
+    if (current.isRightChild()) {
+      grandparent.rotateLeft();
+    }
+    if (grandparent.equals(root)) {
+      this.root = current.getParent();
     }
   }
 
@@ -127,12 +130,12 @@ public class RedBlackTree<K extends Comparable<? super K>, V> {
     return new Tuple<Node<K, V>, Node<K, V>>(parent, current);
   }
 
-  public boolean contains(K key) {
+  public synchronized boolean contains(K key) {
     Tuple<Node<K, V>, Node<K, V>> pair = findNode(key);
     return pair.getY() != null;
   }
 
-  public V get(K key) {
+  public synchronized V get(K key) {
     Tuple<Node<K, V>, Node<K, V>> pair = findNode(key);
     Node<K, V> current = pair.getY();
     if (current == null) {
@@ -141,11 +144,11 @@ public class RedBlackTree<K extends Comparable<? super K>, V> {
     return current.getValue();
   }
 
-  public void clear() {
+  public synchronized void clear() {
     this.root = null;
   }
 
-  public String toString() {
+  public synchronized String toString() {
     return "RBT " + root + " ";
   }
 
